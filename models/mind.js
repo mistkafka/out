@@ -2,7 +2,8 @@ let db = require('./db');
 
 let Mind = db.model('mind', {
     content: String,
-    user: String,
+    nicename: String,
+    number: String,
     photoId: String,
     createtime: {type: Date, default: Date.now}
 });

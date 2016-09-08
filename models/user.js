@@ -3,9 +3,8 @@ let mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let schema = new Schema({
-    email: String,
     nicename: String,
-    password: String,
+    number: {type: Number, default: 1},
     createtime: {type: Date, default: Date.now}
 });
 

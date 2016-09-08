@@ -6,45 +6,29 @@ var tokenGenerator = require('random-token')
 
 let userCtr = module.exports;
 
-userCtr.register = function(req, res) {
-    let email = req.body.email;
-    let password = hash.generate(req.body.password);
-    let newUser = new User({email: email, password: password});
-
-    newUser.save().then(function() {
-        return res.json({
-            status: 'success',
-            data: ''
-        });
-    }).catch(function(err) {
-        return res.json({
-            status: 'failed',
-            message: err.toString()
-        });
-    });
-};
-
 userCtr.login = function(req, res) {
-    User.findOne({email: req.body.email}).then(function(user) {
+    let nicename = req.body.nicename;
+
+    User.findOne({nicename: nicename}).then(function(user) {
         if (!user) {
-            return Promise.reject('User is not exist!');
+            let newUser = new User({nicename: nicename});
+            return newUser.save();
         }
 
-        if (!hash.verify(req.body.password, user.password)) {
-            return Promise.reject('Wrong password!');
-        }
+        // TODO: 用户需要做选择题来确定自己是第几个用户
 
+        return user;
+    }).then(function(user) {
         var newToken = new Token({
             token: Date.now() + tokenGenerator(17),
-            email: req.body.email
+            nicename: user.nicename,
+            number: user.number
         });
         return newToken.save();
     }).then(function(token) {
         return res.json({
             status: 'success',
-            data: {
-                token: token
-            }
+            data: token
         });
     }).catch(function(err) {
         return res.json({
@@ -61,7 +45,8 @@ userCtr.auth = function(req, res, next) {
         if (!token) {
             return Promise.reject('login required');
         }
-        res.locals.email = token.email;
+        res.locals.nicename = token.nicename;
+        res.locals.number = token.number;
         return next();
 
     }).catch((err) => {
@@ -69,21 +54,5 @@ userCtr.auth = function(req, res, next) {
             status: 'failed',
             message: err.toString()
         });
-    });
-};
-
-userCtr.isEmailExist = function(req, res, next) {
-    User.findOne({email: req.body.email}).then(function(user) {
-        if (!user) {
-            return res.json({
-                status: 'success',
-                data: 'email is available!'
-            });
-        } else {
-            return res.json({
-                status: 'failed',
-                message: 'email is exist!'
-            });
-        }
     });
 };

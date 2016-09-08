@@ -5,7 +5,7 @@ let mindCtr = module.exports;
 mindCtr.postMind = function(req, res) {
     let content = req.body.content;
     let photoId = req.body.photoId;
-    let newMind = new Mind({content: content, user: res.locals.email, photoId: req.body.photoId});
+    let newMind = new Mind({content: content, nicename: res.locals.nicename, number: res.locals.number, photoId: req.body.photoId});
 
     newMind.save().then(function() {
         return Mind.count();

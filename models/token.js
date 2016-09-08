@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 
 let schema = new Schema({
     token: String,
-    email: String,
+    nicename: String,
+    number: Number,
     type: {type: String, default: 'auth'},
     createtime: {type: Date, default: Date.now}
 });
